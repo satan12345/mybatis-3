@@ -47,10 +47,11 @@ public abstract class BaseStatementHandler implements StatementHandler {
   protected final Executor executor;
   protected final MappedStatement mappedStatement;
   protected final RowBounds rowBounds;
-
+  //绑定sql
   protected BoundSql boundSql;
 
-  protected BaseStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+  protected BaseStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject,
+                                 RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
     this.configuration = mappedStatement.getConfiguration();
     this.executor = executor;
     this.mappedStatement = mappedStatement;
@@ -65,8 +66,9 @@ public abstract class BaseStatementHandler implements StatementHandler {
     }
 
     this.boundSql = boundSql;
-
+    //创建参数处理器
     this.parameterHandler = configuration.newParameterHandler(mappedStatement, parameterObject, boundSql);
+    //创建结果处理器
     this.resultSetHandler = configuration.newResultSetHandler(executor, mappedStatement, rowBounds, parameterHandler, resultHandler, boundSql);
   }
 

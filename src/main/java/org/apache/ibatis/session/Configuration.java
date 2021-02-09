@@ -105,7 +105,7 @@ public class Configuration {
     protected boolean multipleResultSetsEnabled = true;
     protected boolean useGeneratedKeys;
     protected boolean useColumnLabel = true;
-    protected boolean cacheEnabled = true;
+    protected boolean cacheEnabled = true;//二级缓存默认打开
     protected boolean callSettersOnNulls;
     protected boolean useActualParamName = true;
     protected boolean returnInstanceForEmptyRow;
@@ -118,6 +118,9 @@ public class Configuration {
     protected Set<String> lazyLoadTriggerMethods = new HashSet<String>(Arrays.asList(new String[]{"equals", "clone", "hashCode", "toString"}));
     protected Integer defaultStatementTimeout;
     protected Integer defaultFetchSize;
+    /**
+     * 默认的执行器类型
+     */
     protected ExecutorType defaultExecutorType = ExecutorType.SIMPLE;
     protected AutoMappingBehavior autoMappingBehavior = AutoMappingBehavior.PARTIAL;
     protected AutoMappingUnknownColumnBehavior autoMappingUnknownColumnBehavior = AutoMappingUnknownColumnBehavior.NONE;
@@ -141,6 +144,9 @@ public class Configuration {
     protected Class<?> configurationFactory;
 
     protected final MapperRegistry mapperRegistry = new MapperRegistry(this);
+    /**
+     * 拦截器链
+     */
     protected final InterceptorChain interceptorChain = new InterceptorChain();
     protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
     protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
@@ -549,6 +555,7 @@ public class Configuration {
 
     public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
         ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameterObject, boundSql);
+        //拦截器代理拦截
         parameterHandler = (ParameterHandler) interceptorChain.pluginAll(parameterHandler);
         return parameterHandler;
     }
@@ -562,6 +569,7 @@ public class Configuration {
 
     public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
         StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject, rowBounds, resultHandler, boundSql);
+        //拦截器代理拦截
         statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);
         return statementHandler;
     }
@@ -574,6 +582,7 @@ public class Configuration {
         executorType = executorType == null ? defaultExecutorType : executorType;
         executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
         Executor executor;
+        //根据不同的策略选择不同的executor实现
         if (ExecutorType.BATCH == executorType) {
             executor = new BatchExecutor(this, transaction);
         } else if (ExecutorType.REUSE == executorType) {
@@ -581,9 +590,11 @@ public class Configuration {
         } else {
             executor = new SimpleExecutor(this, transaction);
         }
+        //启用缓存则使用装饰者模式对执行器进行包装
         if (cacheEnabled) {
             executor = new CachingExecutor(executor);
         }
+        //拦截插件解析器
         executor = (Executor) interceptorChain.pluginAll(executor);
         return executor;
     }

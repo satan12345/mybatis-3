@@ -49,6 +49,7 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
   @Override
   public SqlSession openSession(boolean autoCommit) {
+      //level为空 则使用数据库默认的隔离级别
     return openSessionFromDataSource(configuration.getDefaultExecutorType(), null, autoCommit);
   }
 
@@ -87,16 +88,27 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
     return configuration;
   }
 
+    /**
+     * 创建sqlSession
+     * @param execType
+     * @param level
+     * @param autoCommit
+     * @return
+     */
   private SqlSession openSessionFromDataSource(ExecutorType execType, TransactionIsolationLevel level, boolean autoCommit) {
     Transaction tx = null;
     try {
+        //获取环境变量 里面包含dataSource与 transactionFactory
       final Environment environment = configuration.getEnvironment();
+      //获取事务工厂
       final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
+      //创建事务
       tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);
       final Executor executor = configuration.newExecutor(tx, execType);
       return new DefaultSqlSession(configuration, executor, autoCommit);
     } catch (Exception e) {
-      closeTransaction(tx); // may have fetched a connection so lets call close()
+        // may have fetched a connection so lets call close()
+      closeTransaction(tx);
       throw ExceptionFactory.wrapException("Error opening session.  Cause: " + e, e);
     } finally {
       ErrorContext.instance().reset();
