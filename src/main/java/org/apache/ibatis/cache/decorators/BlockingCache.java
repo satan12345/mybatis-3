@@ -42,7 +42,7 @@ public class BlockingCache implements Cache {
 
   public BlockingCache(Cache delegate) {
     this.delegate = delegate;
-    this.locks = new ConcurrentHashMap<Object, ReentrantLock>();
+    this.locks = new ConcurrentHashMap<>();
   }
 
   @Override

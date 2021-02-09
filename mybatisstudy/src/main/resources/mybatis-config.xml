@@ -8,6 +8,9 @@
     <settings>
         <setting name="mapUnderscoreToCamelCase" value="true"/>
     </settings>
+    <typeHandlers>
+        <typeHandler handler="com.able.handler.TimeStamp2LongHandler" javaType="Long" jdbcType="TIMESTAMP"></typeHandler>
+    </typeHandlers>
    <!-- <plugins>
         <plugin interceptor="com.tuling.plugins.ExamplePlugin" ></plugin>
     </plugins>-->
@@ -27,6 +30,7 @@
 
 
     <mappers>
+        <!--<package name="classpath:mapper"></package>-->
        <mapper resource="mapper/UserMapper.xml"/>
     </mappers>
 </configuration>

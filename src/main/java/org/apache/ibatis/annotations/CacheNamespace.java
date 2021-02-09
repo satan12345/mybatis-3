@@ -34,14 +34,26 @@ import org.apache.ibatis.cache.impl.PerpetualCache;
 public @interface CacheNamespace {
   Class<? extends org.apache.ibatis.cache.Cache> implementation() default PerpetualCache.class;
 
+    /**
+     ** 清除策略 默认LRU
+     */
   Class<? extends org.apache.ibatis.cache.Cache> eviction() default LruCache.class;
 
   long flushInterval() default 0;
 
   int size() default 1024;
 
+    /**
+     * 是否可写 true 表示每次获取缓存的拷贝对象
+     *         false 获取引用对象
+     * @return
+     */
   boolean readWrite() default true;
-  
+
+    /**
+     * 用于防止缓存击穿
+     * @return
+     */
   boolean blocking() default false;
 
   /**

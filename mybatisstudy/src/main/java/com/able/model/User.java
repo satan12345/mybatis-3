@@ -11,7 +11,8 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class User implements Serializable {
+
     private Integer id;
     private String name;
     private Date createTime;
