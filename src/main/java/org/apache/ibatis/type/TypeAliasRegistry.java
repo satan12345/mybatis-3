@@ -37,7 +37,7 @@ import org.apache.ibatis.io.Resources;
  */
 public class TypeAliasRegistry {
 
-  private final Map<String, Class<?>> TYPE_ALIASES = new HashMap<String, Class<?>>();
+  private final Map<String, Class<?>> TYPE_ALIASES = new HashMap<>();
 
   public TypeAliasRegistry() {
     registerAlias("string", String.class);
@@ -112,6 +112,7 @@ public class TypeAliasRegistry {
       Class<T> value;
       if (TYPE_ALIASES.containsKey(key)) {
         value = (Class<T>) TYPE_ALIASES.get(key);
+        System.err.println("key="+key+",value="+value);
       } else {
         value = (Class<T>) Resources.classForName(string);
       }

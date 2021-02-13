@@ -95,7 +95,18 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
  * @author Clinton Begin
  */
 public class Configuration {
-
+    /**
+     * <environment id="development">
+     *            <transactionManager type="JDBC"/>
+     *             <dataSource type="POOLED">
+     *                 <property name="driver" value="${mysql.driverClass}"/>
+     *                 <property name="url" value="${mysql.jdbcUrl}"/>
+     *                 <property name="username" value="${mysql.user}"/>
+     *                 <property name="password" value="${mysql.password}"/>
+     *             </dataSource>
+     *         </environment>
+     * 保存数据库的环境配置
+     */
     protected Environment environment;
 
     protected boolean safeRowBoundsEnabled;
@@ -105,7 +116,8 @@ public class Configuration {
     protected boolean multipleResultSetsEnabled = true;
     protected boolean useGeneratedKeys;
     protected boolean useColumnLabel = true;
-    protected boolean cacheEnabled = true;//二级缓存默认打开
+    //二级缓存默认打开
+    protected boolean cacheEnabled = true;
     protected boolean callSettersOnNulls;
     protected boolean useActualParamName = true;
     protected boolean returnInstanceForEmptyRow;

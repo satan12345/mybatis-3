@@ -82,7 +82,7 @@ public class SqlSessionFactoryBuilder {
     public SqlSessionFactory build(InputStream inputStream, String environment, Properties properties) {
         try {
             /**
-             * XMLConfigBuilder 用于解析 mybatis-config.xml
+             * 创建XMLConfigBuilder对象 用于解析 mybatis-config.xml
              */
             XMLConfigBuilder parser = new XMLConfigBuilder(inputStream, environment, properties);
             //将配置文件解析成configuration对象
