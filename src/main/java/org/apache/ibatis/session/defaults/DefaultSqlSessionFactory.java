@@ -44,13 +44,19 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
   @Override
   public SqlSession openSession() {
-    return openSessionFromDataSource(configuration.getDefaultExecutorType(), null, false);
+//    return openSessionFromDataSource(configuration.getDefaultExecutorType(),
+//            null, false);
+    return openSession(false);
   }
 
   @Override
   public SqlSession openSession(boolean autoCommit) {
-      //level为空 则使用数据库默认的隔离级别
-    return openSessionFromDataSource(configuration.getDefaultExecutorType(), null, autoCommit);
+    /**ExecutorType 默认值为 simple
+     * level为空 则使用数据库默认的隔离级别
+     * autocommit 是否自动提交
+     */
+    return openSessionFromDataSource(configuration.getDefaultExecutorType(),
+            null, autoCommit);
   }
 
   @Override
@@ -90,12 +96,14 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
     /**
      * 创建sqlSession
-     * @param execType
-     * @param level
-     * @param autoCommit
+     * @param execType 执行器类型
+     * @param level 数据库事务隔离级别
+     * @param autoCommit 是否自动提交
      * @return
      */
-  private SqlSession openSessionFromDataSource(ExecutorType execType, TransactionIsolationLevel level, boolean autoCommit) {
+  private SqlSession openSessionFromDataSource(ExecutorType execType,
+                                               TransactionIsolationLevel level,
+                                               boolean autoCommit) {
     Transaction tx = null;
     try {
         //获取环境变量 里面包含dataSource与 transactionFactory
@@ -104,7 +112,9 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
       final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
       //创建事务
       tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);
+      //获取执行器
       final Executor executor = configuration.newExecutor(tx, execType);
+      //创建sqlSession
       return new DefaultSqlSession(configuration, executor, autoCommit);
     } catch (Exception e) {
         // may have fetched a connection so lets call close()

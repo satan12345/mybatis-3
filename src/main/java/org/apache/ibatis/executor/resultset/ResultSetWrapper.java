@@ -42,9 +42,9 @@ public class ResultSetWrapper {
 
   private final ResultSet resultSet;
   private final TypeHandlerRegistry typeHandlerRegistry;
-  private final List<String> columnNames = new ArrayList<String>();
-  private final List<String> classNames = new ArrayList<String>();
-  private final List<JdbcType> jdbcTypes = new ArrayList<JdbcType>();
+  private final List<String> columnNames = new ArrayList<String>();//存放列名
+  private final List<String> classNames = new ArrayList<String>();//存放java数据类型
+  private final List<JdbcType> jdbcTypes = new ArrayList<JdbcType>();//存放jdbc数据类型
   private final Map<String, Map<Class<?>, TypeHandler<?>>> typeHandlerMap = new HashMap<String, Map<Class<?>, TypeHandler<?>>>();
   private final Map<String, List<String>> mappedColumnNamesMap = new HashMap<String, List<String>>();
   private final Map<String, List<String>> unMappedColumnNamesMap = new HashMap<String, List<String>>();
@@ -53,8 +53,8 @@ public class ResultSetWrapper {
     super();
     this.typeHandlerRegistry = configuration.getTypeHandlerRegistry();
     this.resultSet = rs;
-    final ResultSetMetaData metaData = rs.getMetaData();
-    final int columnCount = metaData.getColumnCount();
+    final ResultSetMetaData metaData = rs.getMetaData();//获取结果集的元数据
+    final int columnCount = metaData.getColumnCount();//获取列数量
     for (int i = 1; i <= columnCount; i++) {
       columnNames.add(configuration.isUseColumnLabel() ? metaData.getColumnLabel(i) : metaData.getColumnName(i));
       jdbcTypes.add(JdbcType.forCode(metaData.getColumnType(i)));

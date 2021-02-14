@@ -32,11 +32,11 @@
     <!--where  id in(${ids?join(',')})-->
 
     <!--</select>-->
-    <!--<select id="selectById" resultType="com.able.model.User">-->
-        <!--select *-->
-        <!--from user-->
-        <!--where id = #{id}-->
-    <!--</select>-->
+    <select id="selectById3" resultType="com.able.model.User">
+        select *
+        from user
+        where id = #{id}
+    </select>
     <!--<cache/>-->
 
 

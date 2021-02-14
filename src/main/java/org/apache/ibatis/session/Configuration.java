@@ -92,6 +92,7 @@ import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
+ * 全局配置文件
  * @author Clinton Begin
  */
 public class Configuration {
@@ -116,7 +117,9 @@ public class Configuration {
     protected boolean multipleResultSetsEnabled = true;
     protected boolean useGeneratedKeys;
     protected boolean useColumnLabel = true;
-    //二级缓存默认打开
+    /**
+     *  二级缓存默认打开
+     */
     protected boolean cacheEnabled = true;
     protected boolean callSettersOnNulls;
     protected boolean useActualParamName = true;
@@ -131,12 +134,14 @@ public class Configuration {
     protected Integer defaultStatementTimeout;
     protected Integer defaultFetchSize;
     /**
-     * 默认的执行器类型
+     * 默认的执行器类型为simple
      */
     protected ExecutorType defaultExecutorType = ExecutorType.SIMPLE;
     protected AutoMappingBehavior autoMappingBehavior = AutoMappingBehavior.PARTIAL;
     protected AutoMappingUnknownColumnBehavior autoMappingUnknownColumnBehavior = AutoMappingUnknownColumnBehavior.NONE;
-    //保存properties属性
+    /**
+     * 保存properties属性
+     */
     protected Properties variables = new Properties();
     protected ReflectorFactory reflectorFactory = new DefaultReflectorFactory();
     protected ObjectFactory objectFactory = new DefaultObjectFactory();
@@ -154,7 +159,9 @@ public class Configuration {
      * @see <a href='https://code.google.com/p/mybatis/issues/detail?id=300'>Issue 300 (google code)</a>
      */
     protected Class<?> configurationFactory;
-
+    /**
+     * mapper注册器
+     */
     protected final MapperRegistry mapperRegistry = new MapperRegistry(this);
     /**
      * 拦截器链
@@ -166,13 +173,15 @@ public class Configuration {
     /**
      * 存储对应的sql映射信息
      */
-    protected final Map<String, MappedStatement> mappedStatements = new StrictMap<MappedStatement>("Mapped Statements collection");
+    protected final Map<String, MappedStatement> mappedStatements = new StrictMap<>("Mapped Statements collection");
     protected final Map<String, Cache> caches = new StrictMap<Cache>("Caches collection");
     protected final Map<String, ResultMap> resultMaps = new StrictMap<ResultMap>("Result Maps collection");
     protected final Map<String, ParameterMap> parameterMaps = new StrictMap<ParameterMap>("Parameter Maps collection");
     protected final Map<String, KeyGenerator> keyGenerators = new StrictMap<KeyGenerator>("Key Generators collection");
-
-    protected final Set<String> loadedResources = new HashSet<String>();
+    /**
+     * 记录已经注册的资源
+     */
+    protected final Set<String> loadedResources = new HashSet<>();
     protected final Map<String, XNode> sqlFragments = new StrictMap<XNode>("XML fragments parsed from previous mappers");
 
     protected final Collection<XMLStatementBuilder> incompleteStatements = new LinkedList<XMLStatementBuilder>();
@@ -590,16 +599,25 @@ public class Configuration {
         return newExecutor(transaction, defaultExecutorType);
     }
 
+    /**
+     * 创建执行器
+     * @param transaction
+     * @param executorType
+     * @return
+     */
     public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
         executorType = executorType == null ? defaultExecutorType : executorType;
         executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
         Executor executor;
         //根据不同的策略选择不同的executor实现
         if (ExecutorType.BATCH == executorType) {
+            //批量的
             executor = new BatchExecutor(this, transaction);
         } else if (ExecutorType.REUSE == executorType) {
+            //复用的
             executor = new ReuseExecutor(this, transaction);
         } else {
+            //简单的
             executor = new SimpleExecutor(this, transaction);
         }
         //启用缓存则使用装饰者模式对执行器进行包装

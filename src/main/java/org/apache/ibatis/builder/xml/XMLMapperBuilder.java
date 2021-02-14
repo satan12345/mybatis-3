@@ -87,10 +87,17 @@ public class XMLMapperBuilder extends BaseBuilder {
     this.resource = resource;
   }
 
+  /**
+   * 解析mapper文件
+   */
   public void parse() {
     if (!configuration.isResourceLoaded(resource)) {
+      /**
+       * 解析mapper节点
+       */
       configurationElement(parser.evalNode("/mapper"));
       configuration.addLoadedResource(resource);
+      //查找命名空间指定的接口类进行mapper注册
       bindMapperForNamespace();
     }
 
@@ -103,24 +110,42 @@ public class XMLMapperBuilder extends BaseBuilder {
     return sqlFragments.get(refid);
   }
 
+  /**
+   *
+   * @param context
+   * <mapper namespace="com.able.dao.UserMapper">
+   *     <select resultType="com.able.model.User" id="selectByid2">
+   *         select *
+   *         from user
+   *         where id = #{id}
+   *     </select>
+   * </mapper>
+   */
   private void configurationElement(XNode context) {
     try {
+      //获取命名空间
       String namespace = context.getStringAttribute("namespace");
       if (namespace == null || namespace.equals("")) {
         throw new BuilderException("Mapper's namespace cannot be empty");
       }
+      //设置命名空间
       builderAssistant.setCurrentNamespace(namespace);
       cacheRefElement(context.evalNode("cache-ref"));
       cacheElement(context.evalNode("cache"));
       parameterMapElement(context.evalNodes("/mapper/parameterMap"));
       resultMapElements(context.evalNodes("/mapper/resultMap"));
       sqlElement(context.evalNodes("/mapper/sql"));
+      //解析sql语句
       buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
     } catch (Exception e) {
       throw new BuilderException("Error parsing Mapper XML. The XML location is '" + resource + "'. Cause: " + e, e);
     }
   }
 
+  /**
+   * 解析sql语句片段
+   * @param list
+   */
   private void buildStatementFromContext(List<XNode> list) {
     if (configuration.getDatabaseId() != null) {
       buildStatementFromContext(list, configuration.getDatabaseId());
@@ -128,9 +153,32 @@ public class XMLMapperBuilder extends BaseBuilder {
     buildStatementFromContext(list, null);
   }
 
+  /**
+   * 循环解析sql语句
+
+   *
+   *
+   * @param list
+   * *  <select resultType="com.able.model.User" id="selectByid2">
+   *             select *
+   *             from user
+   *             where id = #{id}
+   *    </select>
+   *    <update parameterType="com.able.model.User" id="updateByid2">
+   *             update user
+   *             set name=#{name}
+   *             where id = #{id}
+   *    </update>
+   * @param requiredDatabaseId
+   */
   private void buildStatementFromContext(List<XNode> list, String requiredDatabaseId) {
+
     for (XNode context : list) {
-      final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, builderAssistant, context, requiredDatabaseId);
+      /**
+       * 创建xmlstatementBuilder对象解析sql语句片段
+       */
+      final XMLStatementBuilder statementParser =
+              new XMLStatementBuilder(configuration, builderAssistant, context, requiredDatabaseId);
       try {
         statementParser.parseStatementNode();
       } catch (IncompleteElementException e) {
@@ -396,20 +444,24 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   private void bindMapperForNamespace() {
+    //获取命名空间 com.able.dao.UserMapper
     String namespace = builderAssistant.getCurrentNamespace();
     if (namespace != null) {
       Class<?> boundType = null;
       try {
+        //根据名称查找class类型
         boundType = Resources.classForName(namespace);
       } catch (ClassNotFoundException e) {
         //ignore, bound type is not required
       }
       if (boundType != null) {
+        //该类还没有注册 则进行注册
         if (!configuration.hasMapper(boundType)) {
           // Spring may not know the real resource name so we set a flag
           // to prevent loading again this resource from the mapper interface
           // look at MapperAnnotationBuilder#loadXmlResource
           configuration.addLoadedResource("namespace:" + namespace);
+          //增加mapper注册
           configuration.addMapper(boundType);
         }
       }

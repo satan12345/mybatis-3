@@ -53,14 +53,18 @@ public class XMLStatementBuilder extends BaseBuilder {
     this.requiredDatabaseId = databaseId;
   }
 
+  /**
+   * 解析sql语句片段
+   */
   public void parseStatementNode() {
+    //解析id属性 用于后续与namespace组装成map的key
     String id = context.getStringAttribute("id");
     String databaseId = context.getStringAttribute("databaseId");
 
     if (!databaseIdMatchesCurrent(id, databaseId, this.requiredDatabaseId)) {
       return;
     }
-
+    //获取 select|insert|update|delete节点的属性
     Integer fetchSize = context.getIntAttribute("fetchSize");
     Integer timeout = context.getIntAttribute("timeout");
     String parameterMap = context.getStringAttribute("parameterMap");
@@ -73,13 +77,19 @@ public class XMLStatementBuilder extends BaseBuilder {
 
     Class<?> resultTypeClass = resolveClass(resultType);
     String resultSetType = context.getStringAttribute("resultSetType");
-    StatementType statementType = StatementType.valueOf(context.getStringAttribute("statementType", StatementType.PREPARED.toString()));
+    //获取statementType 默认为 PREPARED
+    StatementType statementType = StatementType.valueOf(context.getStringAttribute("statementType",
+            StatementType.PREPARED.toString()));
     ResultSetType resultSetTypeEnum = resolveResultSetType(resultSetType);
-
+  //获取节点名称 select|insert|update|delete 用于判断是哪种sql语句
     String nodeName = context.getNode().getNodeName();
+    //根据节点名称sql语句类型
     SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
+    //是否是查询语句
     boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
+    //查询语句默认不刷新缓存
     boolean flushCache = context.getBooleanAttribute("flushCache", !isSelect);
+    //查询语句默认使用缓存
     boolean useCache = context.getBooleanAttribute("useCache", isSelect);
     boolean resultOrdered = context.getBooleanAttribute("resultOrdered", false);
 

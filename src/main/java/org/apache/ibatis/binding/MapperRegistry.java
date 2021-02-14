@@ -32,9 +32,12 @@ import java.util.Set;
  * @author Lasse Voss
  */
 public class MapperRegistry {
-
+  /**
+   * 全局配置文件configuration
+   */
   private final Configuration config;
-  private final Map<Class<?>, MapperProxyFactory<?>> knownMappers = new HashMap<Class<?>, MapperProxyFactory<?>>();
+
+  private final Map<Class<?>, MapperProxyFactory<?>> knownMappers = new HashMap<>();
 
   public MapperRegistry(Configuration config) {
     this.config = config;
@@ -58,13 +61,17 @@ public class MapperRegistry {
   }
 
   public <T> void addMapper(Class<T> type) {
+
     if (type.isInterface()) {
+      //是接口
       if (hasMapper(type)) {
+        //已经存在 则抛出异常
         throw new BindingException("Type " + type + " is already known to the MapperRegistry.");
       }
       boolean loadCompleted = false;
       try {
-        knownMappers.put(type, new MapperProxyFactory<T>(type));
+        //添加到mapper中
+        knownMappers.put(type, new MapperProxyFactory<>(type));
         // It's important that the type is added before the parser is run
         // otherwise the binding may automatically be attempted by the
         // mapper parser. If the type is already known, it won't try.

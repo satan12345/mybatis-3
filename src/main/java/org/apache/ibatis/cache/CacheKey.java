@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.apache.ibatis.reflection.ArrayUtil;
 
-/**
+/**缓存键对象
  * @author Clinton Begin
  */
 public class CacheKey implements Cloneable, Serializable {
@@ -44,7 +44,7 @@ public class CacheKey implements Cloneable, Serializable {
     this.hashcode = DEFAULT_HASHCODE;
     this.multiplier = DEFAULT_MULTIPLYER;
     this.count = 0;
-    this.updateList = new ArrayList<Object>();
+    this.updateList = new ArrayList<>();
   }
 
   public CacheKey(Object[] objects) {

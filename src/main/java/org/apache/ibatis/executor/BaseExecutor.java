@@ -73,6 +73,10 @@ public abstract class BaseExecutor implements Executor {
     //一级缓存
     this.localCache = new PerpetualCache("LocalCache");
     this.localOutputParameterCache = new PerpetualCache("LocalOutputParameterCache");
+    /**
+     *
+     * 执行器是否关闭的标记位
+     */
     this.closed = false;
     this.configuration = configuration;
     this.wrapper = this;
@@ -149,17 +153,20 @@ public abstract class BaseExecutor implements Executor {
     ErrorContext.instance().resource(ms.getResource()).activity("executing a query").object(ms.getId());
     if (closed) {
       throw new ExecutorException("Executor was closed.");
-    }
+    }//是否要清空本地缓存
     if (queryStack == 0 && ms.isFlushCacheRequired()) {
       clearLocalCache();
     }
     List<E> list;
     try {
       queryStack++;
+      //缓存中有数据 从缓存中去拿
       list = resultHandler == null ? (List<E>) localCache.getObject(key) : null;
       if (list != null) {
+        //从缓存中获取
         handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
       } else {
+        //从数据库中查询数据
         list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
       }
     } finally {

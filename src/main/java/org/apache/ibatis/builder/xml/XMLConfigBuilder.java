@@ -137,7 +137,13 @@ public class XMLConfigBuilder extends BaseBuilder {
             environmentsElement(root.evalNode("environments"));
             databaseIdProviderElement(root.evalNode("databaseIdProvider"));
             typeHandlerElement(root.evalNode("typeHandlers"));
-            //解析mappers元素
+            //解析mappers节点
+            /**
+             *   <mappers>
+             *         <!--<package name="classpath:mapper"></package>-->
+             *        <mapper resource="mapper/UserMapper.xml"/>
+             *     </mappers>
+             */
             mapperElement(root.evalNode("mappers"));
         } catch (Exception e) {
             throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
@@ -449,6 +455,9 @@ public class XMLConfigBuilder extends BaseBuilder {
      *        <mapper resource="mapper/UserMapper.xml"/>
      *     </mappers>
      * @param parent
+     * <mappers>
+     * <mapper resource="mapper/UserMapper.xml"/>
+     * </mappers>
      * @throws Exception
      */
     private void mapperElement(XNode parent) throws Exception {
@@ -461,7 +470,6 @@ public class XMLConfigBuilder extends BaseBuilder {
                     configuration.addMappers(mapperPackage);
                 } else {
                     //解析mapper子节点
-
                     String resource = child.getStringAttribute("resource");
                     String url = child.getStringAttribute("url");
                     String mapperClass = child.getStringAttribute("class");
@@ -469,7 +477,9 @@ public class XMLConfigBuilder extends BaseBuilder {
                         //解析resource 从classpath下解析配置文件
                         ErrorContext.instance().resource(resource);
                         InputStream inputStream = Resources.getResourceAsStream(resource);
-                        XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
+                        //创建xmlmapperbuidler用于解析mapper
+                        XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream,
+                                configuration, resource, configuration.getSqlFragments());
                         //解析mapper
                         mapperParser.parse();
                     } else if (resource == null && url != null && mapperClass == null) {
@@ -481,6 +491,7 @@ public class XMLConfigBuilder extends BaseBuilder {
                     } else if (resource == null && url == null && mapperClass != null) {
                         //解析class
                         Class<?> mapperInterface = Resources.classForName(mapperClass);
+                        //增加mapper到mapperRegister中
                         configuration.addMapper(mapperInterface);
                     } else {
                         throw new BuilderException("A mapper element may only specify a url, resource or class, but not more than one.");

@@ -47,7 +47,9 @@ import org.apache.ibatis.session.SqlSession;
  * @author Clinton Begin
  */
 public class DefaultSqlSession implements SqlSession {
-
+  /**
+   * 全局配置
+   */
   private final Configuration configuration;
     /**
      * 执行器
@@ -73,16 +75,17 @@ public class DefaultSqlSession implements SqlSession {
 
   @Override
   public <T> T selectOne(String statement) {
-    return this.<T>selectOne(statement, null);
+    return this.selectOne(statement, null);
   }
 
   @Override
   public <T> T selectOne(String statement, Object parameter) {
     // Popular vote was to return null on 0 results and throw exception on too many.
-    List<T> list = this.<T>selectList(statement, parameter);
+    List<T> list = this.selectList(statement, parameter);
     if (list.size() == 1) {
       return list.get(0);
     } else if (list.size() > 1) {
+      //返回多个结果 直接抛出异常
       throw new TooManyResultsException("Expected one result (or null) to be returned by selectOne(), but found: " + list.size());
     } else {
       return null;
@@ -148,7 +151,7 @@ public class DefaultSqlSession implements SqlSession {
 
   @Override
   public <E> List<E> selectList(String statement, Object parameter, RowBounds rowBounds) {
-    try {
+    try {//根据id获取需要执行的sql信息
       MappedStatement ms = configuration.getMappedStatement(statement);
       return executor.query(ms, wrapCollection(parameter), rowBounds, Executor.NO_RESULT_HANDLER);
     } catch (Exception e) {
@@ -294,7 +297,7 @@ public class DefaultSqlSession implements SqlSession {
 
   @Override
   public <T> T getMapper(Class<T> type) {
-    return configuration.<T>getMapper(type, this);
+    return configuration.getMapper(type, this);
   }
 
   @Override
@@ -322,6 +325,13 @@ public class DefaultSqlSession implements SqlSession {
     return (!autoCommit && dirty) || force;
   }
 
+  /**
+   * 封装参数
+   * 如果是集合 封装成map key为collection 如果是list 分装成key为list的map
+   * 如果是数组 分装成 map key为array
+   * @param object
+   * @return
+   */
   private Object wrapCollection(final Object object) {
     if (object instanceof Collection) {
       StrictMap<Object> map = new StrictMap<Object>();

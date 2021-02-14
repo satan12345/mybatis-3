@@ -65,16 +65,18 @@ public class App {
             User user = mapper.selectById(1);
             System.out.println("user1 = " + user);
 
-//            // 执行查询 底层执行jdbc
-//            User user = session.selectOne("com.able.dao.UserMapper.selectById", 1);
-//            System.out.println("user = " + user);
-//            System.err.println(user1 == user);
-
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             session.close();
         }
+    }
+
+    @Test
+    public void test1(){
+        // 执行查询 底层执行jdbc
+        User user = session.selectOne("com.able.dao.UserMapper.selectById3", 1);
+        System.out.println("user = " + user);
     }
 
     @Test

@@ -27,7 +27,7 @@ import org.apache.ibatis.lang.UsesJava7;
 import org.apache.ibatis.reflection.ExceptionUtil;
 import org.apache.ibatis.session.SqlSession;
 
-/**
+/**mapper反射的回调
  * @author Clinton Begin
  * @author Eduardo Macarron
  */
@@ -47,6 +47,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {
+      System.err.println("回调的方法名称为:"+method.getName());
       if (Object.class.equals(method.getDeclaringClass())) {
         return method.invoke(this, args);
       } else if (isDefaultMethod(method)) {

@@ -12,6 +12,8 @@ public interface UserMapper {
     @Select("select * from user where id = #{id}")
     User selectById(Integer id);
 
+    User selectById3(Integer id);
+
     @Select("select * from user where id = #{id}")
     User selectByIdCache(Integer id);
 

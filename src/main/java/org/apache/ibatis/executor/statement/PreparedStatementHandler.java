@@ -61,14 +61,15 @@ public class PreparedStatementHandler extends BaseStatementHandler {
   public <E> List<E> query(Statement statement, ResultHandler resultHandler) throws SQLException {
     PreparedStatement ps = (PreparedStatement) statement;
     ps.execute();
-    return resultSetHandler.<E> handleResultSets(ps);
+    //处理结果
+    return resultSetHandler.handleResultSets(ps);
   }
 
   @Override
   public <E> Cursor<E> queryCursor(Statement statement) throws SQLException {
     PreparedStatement ps = (PreparedStatement) statement;
     ps.execute();
-    return resultSetHandler.<E> handleCursorResultSets(ps);
+    return resultSetHandler.handleCursorResultSets(ps);
   }
 
   @Override

@@ -182,8 +182,8 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   @Override
   public List<Object> handleResultSets(Statement stmt) throws SQLException {
     ErrorContext.instance().activity("handling results").object(mappedStatement.getId());
-
-    final List<Object> multipleResults = new ArrayList<Object>();
+    //用于保存结果集
+    final List<Object> multipleResults = new ArrayList<>();
 
     int resultSetCount = 0;
     ResultSetWrapper rsw = getFirstResultSet(stmt);
@@ -193,6 +193,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     validateResultMapsCount(rsw, resultMapCount);
     while (rsw != null && resultMapCount > resultSetCount) {
       ResultMap resultMap = resultMaps.get(resultSetCount);
+      //处理结果 封装到multipleResults中
       handleResultSet(rsw, resultMap, multipleResults, null);
       rsw = getNextResultSet(stmt);
       cleanUpAfterHandlingResultSet();
