@@ -77,7 +77,7 @@ public class Plugin implements InvocationHandler {
     for (Signature sig : sigs) {
       Set<Method> methods = signatureMap.get(sig.type());
       if (methods == null) {
-        methods = new HashSet<Method>();
+        methods = new HashSet<>();
         signatureMap.put(sig.type(), methods);
       }
       try {

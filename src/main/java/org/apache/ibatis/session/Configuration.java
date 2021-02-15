@@ -624,7 +624,7 @@ public class Configuration {
         if (cacheEnabled) {
             executor = new CachingExecutor(executor);
         }
-        //拦截插件解析器
+        //执行拦截器链中的方法
         executor = (Executor) interceptorChain.pluginAll(executor);
         return executor;
     }

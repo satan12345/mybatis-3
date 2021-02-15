@@ -86,6 +86,10 @@ public class SqlSessionFactoryBuilder {
              */
             XMLConfigBuilder parser = new XMLConfigBuilder(inputStream, environment, properties);
             //将配置文件解析成configuration对象
+            /**
+             * 解析全局配置文件
+             * TODO 重要
+             */
             Configuration configuration = parser.parse();
             return build(configuration);
         } catch (Exception e) {

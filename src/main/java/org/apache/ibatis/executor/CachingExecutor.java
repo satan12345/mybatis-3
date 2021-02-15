@@ -111,7 +111,7 @@ public class CachingExecutor implements Executor {
         return list;
       }
     }
-    return delegate.<E> query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+    return delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
   }
 
   @Override

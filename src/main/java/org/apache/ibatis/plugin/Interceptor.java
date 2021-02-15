@@ -24,7 +24,9 @@ public interface Interceptor {
 
   Object intercept(Invocation invocation) throws Throwable;
 
-  Object plugin(Object target);
+  default Object plugin(Object target){
+    return Plugin.wrap(target,this);
+  }
 
   void setProperties(Properties properties);
 

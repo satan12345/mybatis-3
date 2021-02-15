@@ -116,6 +116,9 @@ public class XMLConfigBuilder extends BaseBuilder {
             loadCustomVfs(settings);
             //解析别名
             typeAliasesElement(root.evalNode("typeAliases"));
+            /**
+             * 解析插件
+             */
             pluginElement(root.evalNode("plugins"));
             objectFactoryElement(root.evalNode("objectFactory"));
             objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
@@ -197,6 +200,7 @@ public class XMLConfigBuilder extends BaseBuilder {
                     configuration.getTypeAliasRegistry().registerAliases(typeAliasPackage);
                 } else {
                     //解析typeAlias节点
+                    //解析别名与class类型
                     String alias = child.getStringAttribute("alias");
                     String type = child.getStringAttribute("type");
                     try {
@@ -216,13 +220,23 @@ public class XMLConfigBuilder extends BaseBuilder {
         }
     }
 
+    /**
+     *plugins>
+     * <plugin interceptor="com.tuling.plugins.ExamplePlugin" ></plugin>
+     *</plugins>
+     */
     private void pluginElement(XNode parent) throws Exception {
         if (parent != null) {
+            //遍历子节点
             for (XNode child : parent.getChildren()) {
+                //获取类名称
                 String interceptor = child.getStringAttribute("interceptor");
                 Properties properties = child.getChildrenAsProperties();
+                //实例化
                 Interceptor interceptorInstance = (Interceptor) resolveClass(interceptor).newInstance();
+                //设置属性
                 interceptorInstance.setProperties(properties);
+                //添加到拦截器链中
                 configuration.addInterceptor(interceptorInstance);
             }
         }
