@@ -8,6 +8,10 @@
     <settings>
         <setting name="mapUnderscoreToCamelCase" value="true"/>
     </settings>
+    <typeAliases>
+        <!--<package name="com.able.model"/>-->
+        <typeAlias type="com.able.model.User" alias="user"/>
+    </typeAliases>
     <typeHandlers>
         <typeHandler handler="com.able.handler.TimeStamp2LongHandler" javaType="Long" jdbcType="TIMESTAMP"></typeHandler>
     </typeHandlers>

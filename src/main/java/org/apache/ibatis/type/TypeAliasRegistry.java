@@ -36,7 +36,9 @@ import org.apache.ibatis.io.Resources;
  * @author Clinton Begin
  */
 public class TypeAliasRegistry {
-
+  /**
+   *保存别名
+   */
   private final Map<String, Class<?>> TYPE_ALIASES = new HashMap<>();
 
   public TypeAliasRegistry() {

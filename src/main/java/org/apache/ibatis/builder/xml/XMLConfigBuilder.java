@@ -111,8 +111,10 @@ public class XMLConfigBuilder extends BaseBuilder {
             //解析properties
             //issue #117 read properties first
             propertiesElement(root.evalNode("properties"));
+            //解析settings
             Properties settings = settingsAsProperties(root.evalNode("settings"));
             loadCustomVfs(settings);
+            //解析别名
             typeAliasesElement(root.evalNode("typeAliases"));
             pluginElement(root.evalNode("plugins"));
             objectFactoryElement(root.evalNode("objectFactory"));
@@ -179,20 +181,31 @@ public class XMLConfigBuilder extends BaseBuilder {
         }
     }
 
+    /**
+     *  <typeAliases>
+     *         //<package name="com.able.model"/>
+     *         <typeAlias type="com.able.model.User" alias="user"/>
+     *     </typeAliases>
+     */
     private void typeAliasesElement(XNode parent) {
         if (parent != null) {
+            //循环解析子节点
             for (XNode child : parent.getChildren()) {
                 if ("package".equals(child.getName())) {
+                    //解析package节点
                     String typeAliasPackage = child.getStringAttribute("name");
                     configuration.getTypeAliasRegistry().registerAliases(typeAliasPackage);
                 } else {
+                    //解析typeAlias节点
                     String alias = child.getStringAttribute("alias");
                     String type = child.getStringAttribute("type");
                     try {
                         Class<?> clazz = Resources.classForName(type);
                         if (alias == null) {
+                            //xml中没有指定别名 则解析class上的Alias注解
                             typeAliasRegistry.registerAlias(clazz);
                         } else {
+                            //xml中指定别名 则直接使用
                             typeAliasRegistry.registerAlias(alias, clazz);
                         }
                     } catch (ClassNotFoundException e) {
