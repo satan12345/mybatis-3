@@ -102,9 +102,13 @@ public class MapperAnnotationBuilder {
   private final Class<?> type;
 
   public MapperAnnotationBuilder(Configuration configuration, Class<?> type) {
+    //解析的资源类
     String resource = type.getName().replace('.', '/') + ".java (best guess)";
+    //助手类
     this.assistant = new MapperBuilderAssistant(configuration, resource);
+    //全局配置文件
     this.configuration = configuration;
+    //解析的class类型
     this.type = type;
 
     sqlAnnotationTypes.add(Select.class);
@@ -119,18 +123,25 @@ public class MapperAnnotationBuilder {
   }
 
   public void parse() {
+    //interface com.able.dao.UserMapper
     String resource = type.toString();
+    //判断是否已经接卸过
     if (!configuration.isResourceLoaded(resource)) {
+      //加载xml资源
       loadXmlResource();
+      //记录已经加载过的类
       configuration.addLoadedResource(resource);
+      //设置命名空间
       assistant.setCurrentNamespace(type.getName());
       parseCache();
       parseCacheRef();
+      //获取所有方法
       Method[] methods = type.getMethods();
       for (Method method : methods) {
         try {
           // issue #237
           if (!method.isBridge()) {
+            //解析方法
             parseStatement(method);
           }
         } catch (IncompleteElementException e) {
@@ -156,6 +167,9 @@ public class MapperAnnotationBuilder {
     }
   }
 
+  /**
+   * 解析xml 方式
+   */
   private void loadXmlResource() {
     // Spring may not know the real resource name so we check a flag
     // to prevent loading again a resource twice
@@ -164,11 +178,13 @@ public class MapperAnnotationBuilder {
       String xmlResource = type.getName().replace('.', '/') + ".xml";
       InputStream inputStream = null;
       try {
+        //将xml解析成流
         inputStream = Resources.getResourceAsStream(type.getClassLoader(), xmlResource);
       } catch (IOException e) {
         // ignore, resource is not required
       }
       if (inputStream != null) {
+        //存在流 则进行xmlMapper解析
         XMLMapperBuilder xmlParser = new XMLMapperBuilder(inputStream, assistant.getConfiguration(), xmlResource, configuration.getSqlFragments(), type.getName());
         xmlParser.parse();
       }
@@ -283,9 +299,14 @@ public class MapperAnnotationBuilder {
     return null;
   }
 
+  /**
+   * 解析方法
+   * @param method
+   */
   void parseStatement(Method method) {
     Class<?> parameterTypeClass = getParameterType(method);
     LanguageDriver languageDriver = getLanguageDriver(method);
+    //解析方法注解上的sql源信息
     SqlSource sqlSource = getSqlSourceFromAnnotations(method, parameterTypeClass, languageDriver);
     if (sqlSource != null) {
       Options options = method.getAnnotation(Options.class);
