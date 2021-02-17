@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2017 the original author or authors.
+ *    Copyright 2009-2021 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
     try {
       System.err.println("回调的方法名称为:"+method.getName());
       if (Object.class.equals(method.getDeclaringClass())) {
+        //调用的是object类的方法
         return method.invoke(this, args);
       } else if (isDefaultMethod(method)) {
         return invokeDefaultMethod(proxy, method, args);
