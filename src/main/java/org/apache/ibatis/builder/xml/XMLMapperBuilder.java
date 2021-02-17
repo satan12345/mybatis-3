@@ -147,10 +147,10 @@ public class XMLMapperBuilder extends BaseBuilder {
    * @param list
    */
   private void buildStatementFromContext(List<XNode> list) {
-    if (configuration.getDatabaseId() != null) {
+//    if (configuration.getDatabaseId() != null) {
       buildStatementFromContext(list, configuration.getDatabaseId());
-    }
-    buildStatementFromContext(list, null);
+//    }
+//    buildStatementFromContext(list, null);
   }
 
   /**

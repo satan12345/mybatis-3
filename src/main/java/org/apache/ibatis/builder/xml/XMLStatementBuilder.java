@@ -39,6 +39,14 @@ import org.apache.ibatis.session.Configuration;
 public class XMLStatementBuilder extends BaseBuilder {
 
   private final MapperBuilderAssistant builderAssistant;
+  /**
+   * mapper中的sql节点
+   * <select resultType="com.able.model.User" id="selectByid2">
+   *         select *
+   *         from user
+   *         where id = #{id}
+   *     </select>
+   */
   private final XNode context;
   private final String requiredDatabaseId;
 
@@ -101,6 +109,7 @@ public class XMLStatementBuilder extends BaseBuilder {
     processSelectKeyNodes(id, parameterTypeClass, langDriver);
     
     // Parse the SQL (pre: <selectKey> and <include> were parsed and removed)
+    //创建sqlSource
     SqlSource sqlSource = langDriver.createSqlSource(configuration, context, parameterTypeClass);
     String resultSets = context.getStringAttribute("resultSets");
     String keyProperty = context.getStringAttribute("keyProperty");
